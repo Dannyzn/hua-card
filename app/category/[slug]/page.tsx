@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCategoryBySlug, getTemplatesByCategory } from "@/lib/templates";
+import {
+  buildCategoryStaticParams,
+  getCategoryBySlug,
+  getTemplatesByCategory,
+} from "@/lib/templates";
 
 type Props = { params: Promise<{ slug: string }> };
+
+export function generateStaticParams() {
+  return buildCategoryStaticParams();
+}
 
 export default async function CategoryPage({ params }: Props) {
   const { slug } = await params;

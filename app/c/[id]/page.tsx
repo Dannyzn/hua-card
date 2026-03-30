@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCard } from "@/lib/card-store";
+import { buildCardStaticParams, getCard } from "@/lib/card-store";
 import { CardFace } from "@/components/CardFace";
 
 type Props = { params: Promise<{ id: string }> };
+
+export async function generateStaticParams() {
+  return buildCardStaticParams();
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;

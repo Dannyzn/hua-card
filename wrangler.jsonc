@@ -1,0 +1,33 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	// 指定账号后 Wrangler 不再调用用户级 /memberships，可避免账户级 API Token 部署时报 9106
+	// 在 Dashboard 右侧栏复制 Account ID；若与你不符请改成自己的
+	"account_id": "35da11b38488493d3b0876bfd79d2110",
+	"name": "hua-card",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2025-03-01",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"services": [
+		{
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "hua-card"
+		}
+	],
+	// KV：npm run kv:create，把命令输出的 id（32 位十六进制，无连字符）填到下方；代码只认 binding 名 STORAGE
+	"kv_namespaces": [
+		{
+			"binding": "STORAGE",
+			"id": "c9605972296e4971a979f46c6f4cadf4"
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
+}

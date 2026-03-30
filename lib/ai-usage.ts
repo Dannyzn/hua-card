@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
+import { getAppKv, KV_KEY_AI_USAGE } from "@/lib/app-kv";
 import { AI_DAILY_LIMIT } from "@/lib/constants";
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -16,7 +17,7 @@ async function ensureDataDir() {
   await fs.mkdir(DATA_DIR, { recursive: true });
 }
 
-async function readFile(): Promise<UsageFile> {
+async function readFromFs(): Promise<UsageFile> {
   try {
     const raw = await fs.readFile(USAGE_FILE, "utf-8");
     return JSON.parse(raw) as UsageFile;
@@ -25,7 +26,26 @@ async function readFile(): Promise<UsageFile> {
   }
 }
 
+async function readFile(): Promise<UsageFile> {
+  const kv = await getAppKv();
+  if (kv) {
+    const raw = await kv.get(KV_KEY_AI_USAGE, "text");
+    if (!raw) return { days: {} };
+    try {
+      return JSON.parse(raw) as UsageFile;
+    } catch {
+      return { days: {} };
+    }
+  }
+  return readFromFs();
+}
+
 async function writeFile(data: UsageFile) {
+  const kv = await getAppKv();
+  if (kv) {
+    await kv.put(KV_KEY_AI_USAGE, JSON.stringify(data));
+    return;
+  }
   await ensureDataDir();
   await fs.writeFile(USAGE_FILE, JSON.stringify(data), "utf-8");
 }

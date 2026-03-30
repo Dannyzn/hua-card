@@ -713,6 +713,19 @@ const LEGACY_CATEGORY_SLUG: Record<string, CategoryId> = {
   solar: "solar24",
 };
 
+/** `output: "export"` 时供 `generateStaticParams` 使用 */
+export function buildCategoryStaticParams(): { slug: string }[] {
+  const slugs = new Set(CATEGORIES.map((c) => c.slug));
+  for (const s of Object.keys(LEGACY_CATEGORY_SLUG)) {
+    slugs.add(s);
+  }
+  return [...slugs].map((slug) => ({ slug }));
+}
+
+export function buildTemplateStaticParams(): { templateId: string }[] {
+  return TEMPLATES.map((t) => ({ templateId: t.id }));
+}
+
 export function getCategoryBySlug(slug: string): CategoryMeta | undefined {
   const mapped = LEGACY_CATEGORY_SLUG[slug];
   if (mapped) {
